@@ -1,0 +1,72 @@
+import requests
+import pandas as pd
+import matplotlib.pyplot as plt
+import seaborn as sns
+
+# Set Seaborn theme
+sns.set_theme(style="darkgrid")
+
+# --- CONFIGURATION ---
+API_KEY = "YOUR_API_KEY"  # Replace with your OpenWeatherMap API key
+CITY = "Mumbai"
+URL = f"http://api.openweathermap.org/data/2.5/forecast?q={CITY}&appid={API_KEY}&units=metric"
+
+# --- FETCH DATA ---
+response = requests.get(URL)
+data = response.json()
+
+if response.status_code != 200:
+    print("Failed to fetch data:", data.get("message", "Unknown error"))
+    exit()
+
+# --- PROCESS DATA ---
+forecast_list = data['list']
+
+weather_data = {
+    "datetime": [],
+    "temperature": [],
+    "humidity": [],
+    "weather": []
+}
+
+for forecast in forecast_list:
+    weather_data["datetime"].append(forecast["dt_txt"])
+    weather_data["temperature"].append(forecast["main"]["temp"])
+    weather_data["humidity"].append(forecast["main"]["humidity"])
+    weather_data["weather"].append(forecast["weather"][0]["main"])
+
+df = pd.DataFrame(weather_data)
+
+# Convert 'datetime' to pandas datetime object
+df["datetime"] = pd.to_datetime(df["datetime"])
+
+# --- VISUALIZATION DASHBOARD ---
+
+plt.figure(figsize=(14, 6))
+
+# Temperature Trend
+plt.subplot(1, 2, 1)
+sns.lineplot(x="datetime", y="temperature", data=df, marker="o", color="orange")
+plt.title(f"Temperature Trend in {CITY}")
+plt.xlabel("Date & Time")
+plt.ylabel("Temperature (°C)")
+plt.xticks(rotation=45)
+
+# Humidity Trend
+plt.subplot(1, 2, 2)
+sns.lineplot(x="datetime", y="humidity", data=df, marker="o", color="blue")
+plt.title(f"Humidity Trend in {CITY}")
+plt.xlabel("Date & Time")
+plt.ylabel("Humidity (%)")
+plt.xticks(rotation=45)
+
+plt.tight_layout()
+plt.show()
+
+# --- WEATHER CONDITION COUNTS ---
+plt.figure(figsize=(8, 5))
+sns.countplot(x="weather", data=df, palette="viridis")
+plt.title(f"Weather Condition Distribution in {CITY}")
+plt.xlabel("Weather Condition")
+plt.ylabel("Count")
+plt.show()
