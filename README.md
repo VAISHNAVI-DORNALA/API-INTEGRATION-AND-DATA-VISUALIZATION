@@ -61,6 +61,10 @@ Educational Projects: Great for academic assignments, data visualization practic
 
 This task exemplifies practical data science skills in API integration, data wrangling, and exploratory data analysis (EDA), demonstrating how to transform raw web data into meaningful insights through visualization.
 
+#OUTPUT
+
+![Image](https://github.com/user-attachments/assets/8ae6a456-94d6-4dbb-af2c-01dfcfc7a8c0)
+
 
 
 
